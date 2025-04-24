@@ -29,8 +29,15 @@ def main():
 def train_model(data_path):
     data = pd.read_csv(data_path)
 
+    # split the path to get the ticker name from the filename
+    ticker_name = os.path.split(data_path)[-1].split('.')[0]
+
     data.info()
     data.head(10)
+
+
+
+    data = data.drop_duplicates()
 
     data = data.drop(columns= ['ticker', 'date'], axis = 1)
     target = data['close']
@@ -58,6 +65,7 @@ def train_model(data_path):
     plt.legend(["Test", "Predicted"])
     plt.xlabel("open")
     plt.ylabel("close")
+    plt.title(ticker_name)
     plt.show()
 
 if __name__ == '__main__':
