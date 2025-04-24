@@ -1,5 +1,3 @@
-from download_dataset import download_dataset
-
 import os
 
 # handle and visualize data
@@ -13,6 +11,12 @@ from sklearn.linear_model import LinearRegression,Lasso,Ridge
 from sklearn.ensemble import RandomForestRegressor, StackingRegressor, GradientBoostingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn import metrics
+
+# get dataset
+import kagglehub
+
+def download_dataset():
+    return kagglehub.dataset_download("svaningelgem/crypto-currencies-daily-prices")
 
 def main():
     # Download latest version of crypto dataset
