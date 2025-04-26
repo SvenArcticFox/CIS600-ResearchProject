@@ -27,6 +27,9 @@ def main():
     print("Path to dataset files:", dataset_path)
     print(dataset_list)
 
+    if not os.path.exists("./figures"):
+        os.mkdir("figures")
+
     for csv in dataset_list:
         train_model(os.path.join(dataset_path, csv))
 
@@ -36,10 +39,13 @@ def train_model(data_path):
     # split the path to get the ticker name from the filename
     ticker_name = os.path.split(data_path)[-1].split('.')[0]
 
+    figure_save_path = os.path.join("./figures", ticker_name)
+
+    if not os.path.exists(figure_save_path):
+        os.mkdir(figure_save_path)
+
     data.info()
     data.head(10)
-
-
 
     data = data.drop_duplicates()
 
@@ -70,7 +76,7 @@ def train_model(data_path):
     plt.xlabel("open")
     plt.ylabel("close")
     plt.title(ticker_name)
-    plt.show()
+    plt.savefig(os.path.join(figure_save_path, "linear_regression.png"))
 
 if __name__ == '__main__':
     main()
