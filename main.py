@@ -25,7 +25,7 @@ def main():
     dataset_list = os.listdir(dataset_path)
 
     print("Path to dataset files:", dataset_path)
-    print(dataset_list)
+    print("Files in dataset:", dataset_list)
 
     if not os.path.exists("./figures"):
         os.mkdir("figures")
