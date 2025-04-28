@@ -89,9 +89,10 @@ def train_models(data_path):
         plt.ylabel("close")
         plt.title(ticker_name)
         plt.savefig(os.path.join(figure_save_path, "linear_regression.png"))
+        plt.close()
 
     def train_lasso():
-        lasso = Lasso(max_iter = 10000, alpha = 0.2)
+        lasso = Lasso(max_iter = 100000, alpha = 0.2)
         lasso.fit(X_train, y_train)
         y_pred = lasso.predict(X_test)
 
@@ -126,6 +127,7 @@ def train_models(data_path):
         plt.ylabel("close")
         plt.title(ticker_name)
         plt.savefig(os.path.join(figure_save_path, "lasso.png"))
+        plt.close()
 
     def train_ridge():
         ridge = Ridge(max_iter=10, alpha=0.1)
@@ -161,12 +163,51 @@ def train_models(data_path):
         plt.ylabel("close")
         plt.title(ticker_name)
         plt.savefig(os.path.join(figure_save_path, "ridge.png"))
+        plt.close()
+
+    def train_random_forest():
+        rf = RandomForestRegressor(n_estimators=100, random_state=46)
+        rf.fit(X_train, y_train)
+        y_pred = rf.predict(X_test)
+
+        # Evaluation
+        evaluation_file = open(os.path.join(figure_save_path, "random_forest_evaluation.txt"), "w")
+
+        evaluation_file.write('Random Forest Evaluation of ' + str(ticker_name) + '\n')
+        evaluation_file.write('Accuracy: ' + str(rf.score(X_test, y_test) * 100) + '\n')
+        evaluation_file.write('Mean Absolute Error: ' + str(metrics.mean_absolute_error(y_test, y_pred)) + '\n')
+        evaluation_file.write('Root Mean Squared Error: ' + str(np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+                              + '\n')
+
+        evaluation_file.close()
+
+        print('Random Forest Evaluation of ', ticker_name)
+        print('Accuracy: ', rf.score(X_test, y_test) * 100)
+        print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+        # Visualization
+        a = X_test.open
+        b = y_test
+        c = X_test.open
+        d = y_pred
+        plt.figure(dpi=80)
+        plt.scatter(a, b)
+        plt.scatter(c, d)
+        plt.legend(["Test", "Predicted"])
+        plt.xlabel("open")
+        plt.ylabel("close")
+        plt.title(ticker_name)
+        plt.savefig(os.path.join(figure_save_path, "random_forest.png"))
+        plt.close()
 
     train_linear_regression()
     print()
     train_lasso()
     print()
     train_ridge()
+    print()
+    train_random_forest()
 
 if __name__ == '__main__':
     main()
