@@ -253,6 +253,78 @@ def train_models(data_path):
         plt.savefig(os.path.join(figure_save_path, "stacking.png"))
         plt.close()
 
+    def train_gradient_boosting():
+        gb = GradientBoostingRegressor(n_estimators=100, random_state=46)
+        gb.fit(X_train, y_train)
+        y_pred = gb.predict(X_test)
+
+        # Evaluation
+        evaluation_file = open(os.path.join(figure_save_path, "gradient_boosting_evaluation.txt"), "w")
+
+        evaluation_file.write('Gradient Boosting Evaluation of ' + str(ticker_name) + '\n')
+        evaluation_file.write('Accuracy: ' + str(gb.score(X_test, y_test) * 100) + '\n')
+        evaluation_file.write('Mean Absolute Error: ' + str(metrics.mean_absolute_error(y_test, y_pred)) + '\n')
+        evaluation_file.write('Root Mean Squared Error: ' + str(np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+                              + '\n')
+
+        evaluation_file.close()
+
+        # print('Gradient Boosting Evaluation of ', ticker_name)
+        # print('Accuracy: ', rf.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+        # Visualization
+        a = X_test.open
+        b = y_test
+        c = X_test.open
+        d = y_pred
+        plt.figure(dpi=80)
+        plt.scatter(a, b)
+        plt.scatter(c, d)
+        plt.legend(["Test", "Predicted"])
+        plt.xlabel("open")
+        plt.ylabel("close")
+        plt.title(ticker_name)
+        plt.savefig(os.path.join(figure_save_path, "gradient_boosting.png"))
+        plt.close()
+
+    def train_decision_tree():
+        dt = DecisionTreeRegressor(max_depth=100) # If you get an error, remove n_jobs parameter
+        dt.fit(X_train, y_train)
+        y_pred = dt.predict(X_test)
+
+        # Evaluation
+        evaluation_file = open(os.path.join(figure_save_path, "decision_tree_evaluation.txt"), "w")
+
+        evaluation_file.write('Decision Tree Evaluation of ' + str(ticker_name) + '\n')
+        evaluation_file.write('Accuracy: ' + str(dt.score(X_test, y_test) * 100) + '\n')
+        evaluation_file.write('Mean Absolute Error: ' + str(metrics.mean_absolute_error(y_test, y_pred)) + '\n')
+        evaluation_file.write('Root Mean Squared Error: ' + str(np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+                              + '\n')
+
+        evaluation_file.close()
+
+        # print('Decision Tree Evaluation of ', ticker_name)
+        # print('Accuracy: ', rf.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+        # Visualization
+        a = X_test.open
+        b = y_test
+        c = X_test.open
+        d = y_pred
+        plt.figure(dpi=80)
+        plt.scatter(a, b)
+        plt.scatter(c, d)
+        plt.legend(["Test", "Predicted"])
+        plt.xlabel("open")
+        plt.ylabel("close")
+        plt.title(ticker_name)
+        plt.savefig(os.path.join(figure_save_path, "decision_tree.png"))
+        plt.close()
+
     # train_linear_regression()
     # print()
     # train_lasso()
@@ -264,23 +336,31 @@ def train_models(data_path):
     # train_stacking()
     # print()
 
+    #Run algorithms in separate threads
     linear_thread = threading.Thread(train_linear_regression())
     lasso_thread = threading.Thread(train_lasso())
     ridge_thread = threading.Thread(train_ridge())
     rf_thread = threading.Thread(train_random_forest())
     stacking_thread = threading.Thread(train_stacking())
+    gb_thread = threading.Thread(train_gradient_boosting())
+    dt_thread = threading.Thread(train_decision_tree())
 
     linear_thread.start()
     lasso_thread.start()
     ridge_thread.start()
     rf_thread.start()
     stacking_thread.start()
+    gb_thread.start()
+    dt_thread.start()
 
     linear_thread.join()
     lasso_thread.join()
     ridge_thread.join()
     rf_thread.join()
     stacking_thread.join()
+    gb_thread.join()
+    dt_thread.join()
+
     print()
 
 
