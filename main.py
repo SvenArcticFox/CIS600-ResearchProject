@@ -1,4 +1,5 @@
 import os
+import threading
 
 # handle and visualize data
 import pandas as pd
@@ -39,6 +40,7 @@ def train_models(data_path):
 
     # split the path to get the ticker name from the filename
     ticker_name = os.path.split(data_path)[-1].split('.')[0]
+    print('Working on', ticker_name)
 
     figure_save_path = os.path.join("./figures", ticker_name)
 
@@ -57,7 +59,7 @@ def train_models(data_path):
     X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.25, random_state=46)
 
     def train_linear_regression():
-        linear = LinearRegression()
+        linear = LinearRegression(n_jobs=-1) # If you get an error, remove n_jobs parameter
         linear.fit(X_train, y_train)
         y_pred = linear.predict(X_test)
 
@@ -72,10 +74,10 @@ def train_models(data_path):
 
         evaluation_file.close()
 
-        print('Linear Regression Evaluation of ', ticker_name)
-        print('Accuracy: ', linear.score(X_test, y_test) * 100)
-        print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
-        print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+        # print('Linear Regression Evaluation of ', ticker_name)
+        # print('Accuracy: ', linear.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
         # Visualization
         a = X_test.open
@@ -108,10 +110,10 @@ def train_models(data_path):
 
         evaluation_file.close()
 
-        print('Lasso Evaluation of ', ticker_name)
-        print('Accuracy: ', lasso.score(X_test, y_test) * 100)
-        print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
-        print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+        # print('Lasso Evaluation of ', ticker_name)
+        # print('Accuracy: ', lasso.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
 
 
@@ -146,10 +148,10 @@ def train_models(data_path):
 
         evaluation_file.close()
 
-        print('Ridge Evaluation of ', ticker_name)
-        print('Accuracy: ', ridge.score(X_test, y_test) * 100)
-        print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
-        print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+        # print('Ridge Evaluation of ', ticker_name)
+        # print('Accuracy: ', ridge.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
         # Visualization
         a = X_test.open
@@ -167,7 +169,8 @@ def train_models(data_path):
         plt.close()
 
     def train_random_forest():
-        rf = RandomForestRegressor(n_estimators=100, random_state=46)
+        rf = RandomForestRegressor(n_estimators=100, random_state=46, n_jobs=-1) # If you get an error,
+                                                                                 # remove n_jobs parameter
         rf.fit(X_train, y_train)
         y_pred = rf.predict(X_test)
 
@@ -182,10 +185,10 @@ def train_models(data_path):
 
         evaluation_file.close()
 
-        print('Random Forest Evaluation of ', ticker_name)
-        print('Accuracy: ', rf.score(X_test, y_test) * 100)
-        print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
-        print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+        # print('Random Forest Evaluation of ', ticker_name)
+        # print('Accuracy: ', rf.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
 
         # Visualization
         a = X_test.open
@@ -202,13 +205,84 @@ def train_models(data_path):
         plt.savefig(os.path.join(figure_save_path, "random_forest.png"))
         plt.close()
 
-    train_linear_regression()
+    def train_stacking():
+        # Base models
+        ridge = Ridge(alpha=0.1)
+        rf = RandomForestRegressor(n_estimators=100, random_state=46)
+        # Final Estimator
+        final_estimator = LinearRegression()
+
+        stacking = StackingRegressor(
+            estimators= [('ridge', ridge), ('rf', rf)],
+            final_estimator= final_estimator,
+            passthrough= True,
+            n_jobs= -1
+        ) # If you get an error, remove n_jobs parameter
+
+        stacking.fit(X_train, y_train)
+        y_pred = stacking.predict(X_test)
+
+        # Evaluation
+        evaluation_file = open(os.path.join(figure_save_path, "stacking_evaluation.txt"), "w")
+
+        evaluation_file.write('Stacking Evaluation of ' + str(ticker_name) + '\n')
+        evaluation_file.write('Accuracy: ' + str(stacking.score(X_test, y_test) * 100) + '\n')
+        evaluation_file.write('Mean Absolute Error: ' + str(metrics.mean_absolute_error(y_test, y_pred)) + '\n')
+        evaluation_file.write('Root Mean Squared Error: ' + str(np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+                              + '\n')
+
+        evaluation_file.close()
+
+        # print('Stacking Evaluation of ', ticker_name)
+        # print('Accuracy: ', stacking.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+        # Visualization
+        a = X_test.open
+        b = y_test
+        c = X_test.open
+        d = y_pred
+        plt.figure(dpi=80)
+        plt.scatter(a, b)
+        plt.scatter(c, d)
+        plt.legend(["Test", "Predicted"])
+        plt.xlabel("open")
+        plt.ylabel("close")
+        plt.title(ticker_name)
+        plt.savefig(os.path.join(figure_save_path, "stacking.png"))
+        plt.close()
+
+    # train_linear_regression()
+    # print()
+    # train_lasso()
+    # print()
+    # train_ridge()
+    # print()
+    # train_random_forest()
+    # print()
+    # train_stacking()
+    # print()
+
+    linear_thread = threading.Thread(train_linear_regression())
+    lasso_thread = threading.Thread(train_lasso())
+    ridge_thread = threading.Thread(train_ridge())
+    rf_thread = threading.Thread(train_random_forest())
+    stacking_thread = threading.Thread(train_stacking())
+
+    linear_thread.start()
+    lasso_thread.start()
+    ridge_thread.start()
+    rf_thread.start()
+    stacking_thread.start()
+
+    linear_thread.join()
+    lasso_thread.join()
+    ridge_thread.join()
+    rf_thread.join()
+    stacking_thread.join()
     print()
-    train_lasso()
-    print()
-    train_ridge()
-    print()
-    train_random_forest()
+
 
 if __name__ == '__main__':
     main()
