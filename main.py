@@ -23,6 +23,7 @@ def main():
     dataset_path = download_dataset()
 
     dataset_list = os.listdir(dataset_path)
+    dataset_list.sort()
 
     print("Path to dataset files:", dataset_path)
     print("Files in dataset:", dataset_list)
@@ -53,7 +54,7 @@ def train_models(data_path):
     target = data['close']
     features = data.drop(columns= ['close'], axis = 1)
 
-    X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.3, random_state=46)
+    X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.25, random_state=46)
 
     def train_linear_regression():
         linear = LinearRegression()
@@ -92,7 +93,7 @@ def train_models(data_path):
         plt.close()
 
     def train_lasso():
-        lasso = Lasso(max_iter = 100000, alpha = 0.2)
+        lasso = Lasso(max_iter = 25000, alpha = 0.2)
         lasso.fit(X_train, y_train)
         y_pred = lasso.predict(X_test)
 
@@ -130,7 +131,7 @@ def train_models(data_path):
         plt.close()
 
     def train_ridge():
-        ridge = Ridge(max_iter=10, alpha=0.1)
+        ridge = Ridge(max_iter=10, alpha=0.05)
         ridge.fit(X_train, y_train)
         y_pred = ridge.predict(X_test)
 
