@@ -90,7 +90,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Linear Regression")
         plt.savefig(os.path.join(figure_save_path, "linear_regression.png"))
         plt.close()
 
@@ -128,7 +128,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Lasso")
         plt.savefig(os.path.join(figure_save_path, "lasso.png"))
         plt.close()
 
@@ -164,7 +164,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Ridge")
         plt.savefig(os.path.join(figure_save_path, "ridge.png"))
         plt.close()
 
@@ -201,7 +201,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Random Forest")
         plt.savefig(os.path.join(figure_save_path, "random_forest.png"))
         plt.close()
 
@@ -249,7 +249,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Stacking")
         plt.savefig(os.path.join(figure_save_path, "stacking.png"))
         plt.close()
 
@@ -285,7 +285,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Gradient Boosting")
         plt.savefig(os.path.join(figure_save_path, "gradient_boosting.png"))
         plt.close()
 
@@ -321,7 +321,7 @@ def train_models(data_path):
         plt.legend(["Test", "Predicted"])
         plt.xlabel("open")
         plt.ylabel("close")
-        plt.title(ticker_name)
+        plt.title(ticker_name + " Decision Tree")
         plt.savefig(os.path.join(figure_save_path, "decision_tree.png"))
         plt.close()
 
