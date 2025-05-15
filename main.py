@@ -9,7 +9,7 @@ import numpy as np
 # sklearn models
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression,Lasso,Ridge
-from sklearn.ensemble import RandomForestRegressor, StackingRegressor, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor, StackingRegressor, GradientBoostingRegressor, BaggingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn import metrics
 
@@ -325,6 +325,42 @@ def train_models(data_path):
         plt.savefig(os.path.join(figure_save_path, "decision_tree.png"))
         plt.close()
 
+    def train_bagging():
+        bagging = BaggingRegressor(n_estimators=100, random_state=46)
+        bagging.fit(X_train, y_train)
+        y_pred = bagging.predict(X_test)
+
+        # Evaluation
+        evaluation_file = open(os.path.join(figure_save_path, "bagging_evaluation.txt"), "w")
+
+        evaluation_file.write('Bagging Evaluation of ' + str(ticker_name) + '\n')
+        evaluation_file.write('Accuracy: ' + str(bagging.score(X_test, y_test) * 100) + '\n')
+        evaluation_file.write('Mean Absolute Error: ' + str(metrics.mean_absolute_error(y_test, y_pred)) + '\n')
+        evaluation_file.write('Root Mean Squared Error: ' + str(np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+                              + '\n')
+
+        evaluation_file.close()
+
+        # print('Bagging Evaluation of ', ticker_name)
+        # print('Accuracy: ', rf.score(X_test, y_test) * 100)
+        # print('Mean Absolute Error: ', metrics.mean_absolute_error(y_test, y_pred))
+        # print('Root Mean Squared Error: ', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+        # Visualization
+        a = X_test.open
+        b = y_test
+        c = X_test.open
+        d = y_pred
+        plt.figure(dpi=80)
+        plt.scatter(a, b)
+        plt.scatter(c, d)
+        plt.legend(["Test", "Predicted"])
+        plt.xlabel("open")
+        plt.ylabel("close")
+        plt.title(ticker_name + " Bagging")
+        plt.savefig(os.path.join(figure_save_path, "bagging.png"))
+        plt.close()
+
     # train_linear_regression()
     # print()
     # train_lasso()
@@ -344,6 +380,7 @@ def train_models(data_path):
     stacking_thread = threading.Thread(train_stacking())
     gb_thread = threading.Thread(train_gradient_boosting())
     dt_thread = threading.Thread(train_decision_tree())
+    bagging_thread = threading.Thread(train_bagging())
 
     linear_thread.start()
     lasso_thread.start()
@@ -352,6 +389,7 @@ def train_models(data_path):
     stacking_thread.start()
     gb_thread.start()
     dt_thread.start()
+    bagging_thread.start()
 
     linear_thread.join()
     lasso_thread.join()
@@ -360,6 +398,7 @@ def train_models(data_path):
     stacking_thread.join()
     gb_thread.join()
     dt_thread.join()
+    bagging_thread.join()
 
     print()
 
