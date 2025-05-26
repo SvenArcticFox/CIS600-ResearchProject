@@ -34,7 +34,7 @@ def makeCSV(dir):
                 algorithmName = 'Random Forest'
             elif txtFile == 'lasso_evaluation.txt':
                 algorithmName = 'Lasso Regression'
-            elif txtFile == 'radient_boosting_evaluation.txt':
+            elif txtFile == 'gradient_boosting_evaluation.txt':
                 algorithmName = 'Gradient Boosting'
             elif txtFile == 'bagging_evaluation.txt':
                 algorithmName = 'Bagging'
