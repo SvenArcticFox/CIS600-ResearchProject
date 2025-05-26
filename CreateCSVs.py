@@ -21,7 +21,6 @@ def makeCSV(dir):
         csvWriter.writerow(header)
 
         for txtFile in files:
-            algorithmName = ''
             if txtFile == 'linear_regression_evaluation.txt':
                 algorithmName = 'Linear Regression'
             elif txtFile == 'decision_tree_evaluation.txt':
