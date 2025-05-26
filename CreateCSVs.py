@@ -52,7 +52,7 @@ def makeCSV(dir):
 
             csvWriter.writerow(row)
 
-    print('Successfully wrote CSV Evalution for', dir)
+    print('Successfully wrote CSV Evaluation for', dir)
     os.chdir('..')
 
 
